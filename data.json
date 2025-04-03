@@ -1,0 +1,257 @@
+{
+  "attendance_data": [
+    {
+      "subject": "M3",
+      "attendance": [
+        {
+          "date": "Tue Feb 25 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Wed Feb 26 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Feb 27 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Fri Feb 28 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Sat Mar 01 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Mon Feb 03 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Tue Mar 04 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Wed Mar 05 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Mar 06 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Fri Mar 07 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        }
+      ],
+      "attendancePercentage": 60
+    },
+    {
+      "subject": "DSA",
+      "attendance": [
+        {
+          "date": "Tue Feb 25 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Wed Feb 26 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Feb 27 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Fri Feb 28 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Sat Mar 01 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Mon Feb 03 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Tue Mar 04 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Wed Mar 05 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Mar 06 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        }
+      ],
+      "attendancePercentage": 88.88888888888889
+    },
+    {
+      "subject": "SE",
+      "attendance": [
+        {
+          "date": "Tue Feb 25 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Wed Feb 26 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Feb 27 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Fri Feb 28 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Sat Mar 01 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Mon Feb 03 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Tue Mar 04 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Wed Mar 05 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Thu Mar 06 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        }
+      ],
+      "attendancePercentage": 88.88888888888889
+    },
+    {
+      "subject": "PPL",
+      "attendance": [
+        {
+          "date": "Tue Feb 25 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Wed Feb 26 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Feb 27 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Fri Feb 28 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Sat Mar 01 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Mon Feb 03 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Tue Mar 04 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Wed Mar 05 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Mar 06 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Mar 27 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Fri Mar 28 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        }
+      ],
+      "attendancePercentage": 54.54545454545454
+    },
+    {
+      "subject": "MP",
+      "attendance": [
+        {
+          "date": "Tue Feb 25 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        },
+        {
+          "date": "Wed Feb 26 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Feb 27 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Fri Feb 28 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Sat Mar 01 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Mon Feb 03 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Tue Mar 04 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Wed Mar 05 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Thu Mar 06 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "P"
+        },
+        {
+          "date": "Sat Mar 08 2025 00:00:00 GMT+0530 (India Standard Time)",
+          "status": "A"
+        }
+      ],
+      "attendancePercentage": 80
+    }
+  ],
+  "scores": [
+    {
+      "subject": "M3",
+      "score": 60
+    },
+    {
+      "subject": "DSA",
+      "score": 88.89
+    },
+    {
+      "subject": "SE",
+      "score": 88.89
+    },
+    {
+      "subject": "PPL",
+      "score": 54.55
+    },
+    {
+      "subject": "MP",
+      "score": 80
+    },
+    {
+      "subject": "MAIN",
+      "score": 74.466
+    }
+  ],
+  "name": "RANJIT CHANDRASHEKHAR JAGTAP"
+}
