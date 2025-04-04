@@ -57,7 +57,6 @@ Want to improve One Campus? Here’s how to get started:
       CLOUDINARY_CLOUD_NAME=
       CLOUDINARY_API_KEY=
       CLOUDINARY_API_SECRET=
-
      ```
 
 4. **Run Locally**:
