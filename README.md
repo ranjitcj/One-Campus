@@ -1,4 +1,8 @@
-# One Campus: Streamlining College Life
+[![](.github/screenshots/poster.png)](https://www.getinboxzero.com)
+
+<p align="center">
+    <h1 align="center">One Campus: Streamlining College Life</h1>
+</p>
 
 ## A Unified Platform for Attendance, Library, and Campus Updates
 
