@@ -1,4 +1,4 @@
-[![](.github/screenshots/poster.png)](https://www.getinboxzero.com)
+[![](.github/screenshots/poster.png)]
 
 <p align="center">
     <h1 align="center">One Campus: Streamlining College Life</h1>
