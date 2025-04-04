@@ -1,63 +1,83 @@
-# One Campus
+# One Campus: Streamlining College Life
 
-## Overview
+## A Unified Platform for Attendance, Library, and Campus Updates
 
-One Campus is an Android application designed to be a comprehensive platform for college students, providing tools and resources to enhance their academic and social experience. Whether you're looking to manage attendance, share notes, or collaborate on projects, One Campus aims to be your one-stop solution.
+One Campus is an all-in-one web application designed to simplify campus management for students and teachers alike. From marking attendance with a single tap to tracking library due dates with live data from Koha’s MySQL database, this project brings efficiency and clarity to college workflows. Built with a modern tech stack including Next.js, TypeScript, MongoDB, and Google App Script, One Campus provides a clean, accessible interface for attendance tracking, student data insights, library notifications, and campus-wide posting—without the mess of traditional social media.
 
-## Features
+### Built with
 
-- **Attendance Manager**: Track your attendance with an intuitive interface powered by Room Library and SQLite.
-- **Notes Sharing**: Upload and download notes, with author credits and download counts to encourage quality contributions.
-- **Project Collaboration**: Connect with peers to work on projects together (feature under development).
-- **User-Friendly Design**: Built with Material UI, offering both Light and Dark modes for a personalized experience.
-- **Community-Driven**: Fosters a sense of healthy competition and collaboration among students.
+- **Next.js**: Framework for building server-rendered React applications
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **shadcn/ui**: Reusable, customizable UI components
 
-## Getting Started
+### Requirements
 
-### Prerequisites
+- **Node.js**: >= 22.14.0
+- **npm**: >= 10.9.2
 
-- Android Studio 4.0 or higher
-- Java and Kotlin development environments set up
-- An Android device or emulator running Android 5.0 (Lollipop) or above
+### Features
 
-### Installation
+- **Marking Attendance**: Teachers can quickly mark and submit attendance using a tap-to-mark system, exported seamlessly to Excel via Google App Script.
+- **Student Data**: Students can view their attendance records in real-time.
+- **Library Integration**: Live data from Koha’s MySQL database delivers notifications like book due dates.
+- **Posting**: A streamlined posting feature ensures campus updates are accessible to all, with images uploaded via Cloudinary.
 
-1. **Clone the Repository**
+### Installation and Usage (For Contributors)
+
+Want to improve One Campus? Here’s how to get started:
+
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/ranjitcj/College-Connect.git
+   git clone https://github.com/ranjitcj/One-Campus.git
+   cd One-Campus
    ```
-2. **Open in Android Studio**  
-   Open the cloned project folder in Android Studio and let Gradle sync complete.
-3. **Build and Run**  
-   Connect an Android device or start an emulator, then click "Run" in Android Studio to install the app.
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Set Up Environment**:
 
-## Usage
+   - Create a `.env.local` file with your MongoDB URI, Google App Script credentials, and MySQL (Koha) connection details.
+   - Example:
 
-- **Attendance Tracking**: Navigate to the Attendance tab to log and view your attendance stats.
-- **Notes Section**: Browse available notes or upload your own via the Notes tab.
-- **Collaboration**: Check the Project Collaboration section (WIP) to list or join projects.
+     ```
+      MONGODB_URI=
+      NEXTAUTH_SECRET=
+      EMAIL_API=
+      CLOUDINARY_CLOUD_NAME=
+      CLOUDINARY_API_KEY=
+      CLOUDINARY_API_SECRET=
 
-## Contributing
+     ```
 
-We welcome contributions! Please follow these steps:
+4. **Run Locally**:
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000` in your browser.
+5. **Build for Production**:
+   ```bash
+   npm run build
+   npm start
+   ```
 
-1. Fork the repository.
-2. Create a branch for your feature (`git checkout -b feature/YourFeature`).
-3. Commit your changes (`git commit -m "Add YourFeature"`).
-4. Push to your branch (`git push origin feature/YourFeature`).
-5. Open a Pull Request to the `development` branch.
+### Contributor Expectations
 
-For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md). Ensure your PR passes build and unit-test checks.
+We’d love your help to make One Campus even better! Here’s how to contribute:
 
-## Support
+- **Issues**: Report bugs or suggest features by creating an issue in the GitHub issue queue.
+- **Pull Requests**: Submit fixes or enhancements via pull requests.
+- **Commit Style**: Squash commits for cleaner history. Example: `git rebase -i` before pushing.
+- **Code Standards**: Follow TypeScript and React best practices. Run `npm run lint` before submitting.
 
-- **Issues**: Report bugs or suggest features via the [Issues](https://github.com/ranjitcj/College-Connect/issues) tab.
-- **Contact**: Reach out to the maintainers for help (add your contact info here if applicable).
+### Known Issues
 
-## Maintainers
+- **Attendance Export**: Occasional delays in Google Drive sync due to API rate limits.
+- **Library Notifications**: MySQL connection may timeout under heavy load—optimization in progress.
+- **Mobile View**: Posting UI needs better responsiveness for smaller screens.
 
-- [ranjitcj](https://github.com/ranjitcj) - Lead Developer
+---
 
-## License
+**Tech Stack**: TypeScript, TSX, Next.js, MongoDB, React, Google App Script, Google Drive, Excel, Koha, MySQL
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Check out the repo: [https://github.com/ranjitcj/One-Campus](https://github.com/ranjitcj/One-Campus)
