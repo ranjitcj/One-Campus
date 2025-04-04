@@ -6,12 +6,9 @@ One Campus is an all-in-one web application designed to simplify campus manageme
 
 ### Built with
 
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- **Next.js**: Framework for building server-rendered React applications
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
-- **shadcn/ui**: Reusable, customizable UI components
+- [Next.js](https://nextjs.org/): Framework for building server-rendered React applications
+- [Tailwind CSS](https://tailwindcss.com/): Utility-first CSS framework for rapid UI development
+- [shadcn/ui](https://ui.shadcn.com/): Reusable, customizable UI components
 
 ### Requirements
 
