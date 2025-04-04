@@ -6,6 +6,9 @@ One Campus is an all-in-one web application designed to simplify campus manageme
 
 ### Built with
 
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
 - **Next.js**: Framework for building server-rendered React applications
 - **Tailwind CSS**: Utility-first CSS framework for rapid UI development
 - **shadcn/ui**: Reusable, customizable UI components
@@ -21,6 +24,16 @@ One Campus is an all-in-one web application designed to simplify campus manageme
 - **Student Data**: Students can view their attendance records in real-time.
 - **Library Integration**: Live data from Koha’s MySQL database delivers notifications like book due dates.
 - **Posting**: A streamlined posting feature ensures campus updates are accessible to all, with images uploaded via Cloudinary.
+
+## Feature Screenshots
+
+|         ![Landing Page](.github/screenshots/Landing%20Page.png)         |             ![Creating Post](.github/screenshots/Post.png)              |
+| :---------------------------------------------------------------------: | :---------------------------------------------------------------------: |
+|                             _Landing Page_                              |                             _Creating Post_                             |
+|   ![Student Attendance](.github/screenshots/Student%20Attendance.png)   |  ![Student Library](.github/screenshots/Student%20Library%20Data.png)   |
+|                          _Student Attendance_                           |                            _Student Library_                            |
+| ![Teacher Attendance](.github/screenshots/Teacher%20Attendance%201.jpg) | ![Teacher Attendance](.github/screenshots/Teacher%20Attendance%202.jpg) |
+|                          _Teacher Attendance_                           |                          _Teacher Attendance_                           |
 
 ### Installation and Usage (For Contributors)
 
