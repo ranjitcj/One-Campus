@@ -16,8 +16,8 @@ One Campus is an all-in-one web application designed to simplify campus manageme
 
 ### Requirements
 
-- **Node.js**: >= 22.14.0
-- **npm**: >= 10.9.2
+- [Node.js](https://nodejs.org/en/) >= 22.14.0
+- [npm](https://npm.io/) >= 10.9.2
 
 ### Features
 
