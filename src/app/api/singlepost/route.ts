@@ -4,15 +4,22 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Post from "@/model/Post";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { Id: string } }
-) {
+export async function GET(request: NextRequest) {
   // Connect to the database
   await dbConnect();
 
   try {
-    const userId = params.Id;
+    // Get the Id from the URL
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('id');
+    
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, message: "No user ID provided" },
+        { status: 400 }
+      );
+    }
+
     const decodedUserId = decodeURIComponent(userId);
     const user = await Post.find({ _id: decodedUserId });
 

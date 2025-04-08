@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://one-campus.vercel.app
+
+# Sitemaps
+Sitemap: https://one-campus.vercel.app/sitemap.xml

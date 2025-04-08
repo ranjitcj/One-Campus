@@ -4,7 +4,15 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/option";
 import cloudinary from "@/lib/cloudinary";
 
-export async function POST(req: NextRequest) {
+interface CloudinaryResponse {
+  url: string;
+  publicId: string;
+  width: number;
+  height: number;
+  format: string;
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -41,36 +49,28 @@ export async function POST(req: NextRequest) {
     const folder = `posts/${userId}/${date}`;
 
     // Upload to Cloudinary
-    return new Promise((resolve) => {
+    const uploadResult = await new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder,
           resource_type: "image",
-          // Optional transformations
           transformation: [
-            { width: 1200, crop: "limit" }, // Resize to max width 1200px
-            { quality: "auto:good" }, // Optimize quality
+            { width: 1200, crop: "limit" },
+            { quality: "auto:good" },
           ],
         },
         (error, result) => {
           if (error || !result) {
             console.error("Cloudinary upload error:", error);
-            resolve(
-              NextResponse.json(
-                { message: "Failed to upload image" },
-                { status: 500 }
-              )
-            );
+            reject(error || new Error("Failed to upload image"));
           } else {
-            resolve(
-              NextResponse.json({
-                url: result.secure_url,
-                publicId: result.public_id,
-                width: result.width,
-                height: result.height,
-                format: result.format,
-              })
-            );
+            resolve({
+              url: result.secure_url,
+              publicId: result.public_id,
+              width: result.width,
+              height: result.height,
+              format: result.format,
+            });
           }
         }
       );
@@ -78,6 +78,8 @@ export async function POST(req: NextRequest) {
       uploadStream.write(buffer);
       uploadStream.end();
     });
+
+    return NextResponse.json(uploadResult);
   } catch (error) {
     console.error("Error uploading image:", error);
     return NextResponse.json(
