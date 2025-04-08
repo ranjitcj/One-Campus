@@ -7,32 +7,36 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  ThumbsUp,
+  Heart,
   MessageCircle,
   Share2,
-  Eye,
+  Bookmark,
+  MoreHorizontal,
+  Send,
+  Smile,
+  Plus,
   ChevronLeft,
   ChevronRight,
-  Plus,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 export default function Page() {
   const [posts, setPosts] = useState<IPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const loadPosts = async () => {
       try {
         setLoading(true);
         const response = await fetchPosts({ postStatus: "published" });
-        // Filter posts to ensure only published posts are shown
         const publishedPosts = response.posts.filter(post => post.postStatus === "published");
         setPosts(publishedPosts);
       } catch (err) {
@@ -43,12 +47,10 @@ export default function Page() {
       }
     };
 
-    // Use requestIdleCallback for better performance
     if (typeof window !== 'undefined') {
       if ('requestIdleCallback' in window) {
         requestIdleCallback(loadPosts);
       } else {
-        // Fallback for browsers that don't support requestIdleCallback
         setTimeout(loadPosts, 0);
       }
     }
@@ -59,7 +61,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4">
+    <div className="flex flex-col items-center gap-4 p-4 max-w-2xl mx-auto">
       {loading ? (
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -73,17 +75,13 @@ export default function Page() {
           No published posts available
         </div>
       ) : (
-        <>
-          <h1 className="text-2xl font-bold">Latest Posts</h1>
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            {posts.map((post) => (
-              <PostCard key={post._id?.toString()} post={post} />
-            ))}
-          </div>
-        </>
+        <div className="w-full space-y-4">
+          {posts.map((post) => (
+            <PostCard key={post._id?.toString()} post={post} session={session} />
+          ))}
+        </div>
       )}
 
-      {/* Add New Post Button */}
       <Button
         onClick={handleAddNew}
         size="icon"
@@ -98,21 +96,83 @@ export default function Page() {
 
 interface PostCardProps {
   post: IPost;
+  session: any;
 }
 
-function PostCard({ post }: PostCardProps) {
+function PostCard({ post, session }: PostCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes.length);
+  const [commentsCount, setCommentsCount] = useState(post.comments.length);
+  const [sharesCount, setSharesCount] = useState(post.shares);
+  const [viewsCount, setViewsCount] = useState(post.views);
+  const [commentInput, setCommentInput] = useState("");
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const hasMultipleImages = post.images && post.images.length > 1;
 
+  useEffect(() => {
+    if (session?.user?._id) {
+      const userLiked = post.likes.some(likeId => likeId.toString() === session.user._id.toString());
+      setIsLiked(userLiked);
+    }
+  }, [post.likes, session?.user?._id]);
+
+  const handleInteraction = async (action: string, comment?: string) => {
+    if (!session) {
+      toast.error("Please login to interact with posts");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/post/${post._id}/interact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action, comment }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to perform action");
+      }
+
+      const data = await response.json();
+      
+      switch (action) {
+        case "like":
+          setIsLiked(!isLiked);
+          setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
+          break;
+        case "comment":
+          setCommentsCount(commentsCount + 1);
+          setCommentInput("");
+          setShowCommentInput(false);
+          break;
+        case "share":
+          setSharesCount(sharesCount + 1);
+          break;
+        case "view":
+          setViewsCount(viewsCount + 1);
+          break;
+      }
+
+      toast.success("Action completed successfully");
+    } catch (error) {
+      console.error("Error performing action:", error);
+      toast.error("Failed to perform action");
+    }
+  };
+
   const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the card click event
+    e.stopPropagation();
     if (post.images) {
       setCurrentImageIndex((prev) => (prev + 1) % post.images.length);
     }
   };
 
   const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the card click event
+    e.stopPropagation();
     if (post.images) {
       setCurrentImageIndex(
         (prev) => (prev - 1 + post.images.length) % post.images.length
@@ -121,123 +181,166 @@ function PostCard({ post }: PostCardProps) {
   };
 
   const handleCardClick = () => {
-    // Navigate to the single post page with the post ID
+    handleInteraction("view");
     if (post._id) {
       location.href = `/dashboard/singlepost/${post._id}`;
     }
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleInteraction("share");
+    if (navigator.share) {
+      navigator.share({
+        title: "Check out this post!",
+        text: post.content,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard");
+    }
+  };
+
+  // Get the latest comment
+  const latestComment = post.comments.length > 0 ? post.comments[post.comments.length - 1] : null;
+
   return (
-    <Card
-      className="overflow-hidden flex flex-col h-full cursor-pointer transition-all hover:shadow-md"
-      onClick={handleCardClick}
-    >
-      {post.images && post.images.length > 0 && (
-        <div className="relative aspect-video w-full overflow-hidden">
-          {/* Image Carousel */}
-          <div className="relative h-full w-full">
-            <img
-              src={post.images[currentImageIndex].url}
-              alt={post.images[currentImageIndex].altText || "Post image"}
-              className="object-cover w-full h-full transition-all duration-300"
-            />
-
-            {hasMultipleImages && (
-              <>
-                {/* Use shadcn Button components for navigation */}
-                <Button
-                  onClick={prevImage}
-                  size="icon"
-                  variant="secondary"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full opacity-80 hover:opacity-100"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-
-                <Button
-                  onClick={nextImage}
-                  size="icon"
-                  variant="secondary"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full opacity-80 hover:opacity-100"
-                  aria-label="Next image"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-
-                {/* Image counter using shadcn Badge */}
-                <Badge
-                  variant="secondary"
-                  className="absolute bottom-2 right-2 bg-background/70 backdrop-blur-sm"
-                >
-                  {currentImageIndex + 1} / {post.images.length}
-                </Badge>
-
-                {/* Image pagination indicators */}
-                <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-                  {post.images.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent the card click event
-                        setCurrentImageIndex(index);
-                      }}
-                      className={`h-1.5 rounded-full transition-all ${
-                        index === currentImageIndex
-                          ? "w-4 bg-primary"
-                          : "w-1.5 bg-muted"
-                      }`}
-                      aria-label={`Go to image ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-      <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
+    <Card className="w-full border-none shadow-none">
+      {/* Post Header */}
+      <CardHeader className="flex flex-row items-center justify-between p-4">
+        <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
             <AvatarFallback>
               {post.authorName.toString().substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div>
-            <p className="text-sm font-medium">
-              {post ? post.authorName : "Loading..."}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {new Date(post.createdAt).toLocaleDateString()}
-            </p>
-          </div>
+          <span className="font-semibold">{post.authorName}</span>
         </div>
-        <CardTitle className="line-clamp-2 text-lg">{post.content}</CardTitle>
+        <Button variant="ghost" size="icon">
+          <MoreHorizontal className="h-5 w-5" />
+        </Button>
       </CardHeader>
-      <CardContent className="pb-2 flex-grow">
-        <p className="line-clamp-3 text-sm">{post.category}</p>
-        <p className="line-clamp-3 text-sm">{post.tags.join(", ")}</p>
-      </CardContent>
-      <CardFooter className="pt-2 flex justify-between text-muted-foreground text-xs">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1">
-            <ThumbsUp className="h-3 w-3" />
-            {post.likes.length}
-          </span>
-          <span className="flex items-center gap-1">
-            <MessageCircle className="h-3 w-3" />
-            {post.comments.length}
-          </span>
+
+      {/* Post Image */}
+      <div className="relative aspect-square w-full">
+        <img
+          src={post.images[currentImageIndex].url}
+          alt={post.images[currentImageIndex].altText || "Post image"}
+          className="object-cover w-full h-full"
+        />
+        {hasMultipleImages && (
+          <>
+            <Button
+              onClick={prevImage}
+              size="icon"
+              variant="secondary"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full opacity-80 hover:opacity-100"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={nextImage}
+              size="icon"
+              variant="secondary"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full opacity-80 hover:opacity-100"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </>
+        )}
+      </div>
+
+      {/* Post Actions */}
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleInteraction("like")}
+              className={isLiked ? "text-red-500" : ""}
+            >
+              <Heart className={`h-6 w-6 ${isLiked ? "fill-current" : ""}`} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowCommentInput(!showCommentInput)}
+            >
+              <MessageCircle className="h-6 w-6" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleShare}
+            >
+              <Send className="h-6 w-6" />
+            </Button>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsBookmarked(!isBookmarked)}
+            className={isBookmarked ? "text-primary" : ""}
+          >
+            <Bookmark className={`h-6 w-6 ${isBookmarked ? "fill-current" : ""}`} />
+          </Button>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1">
-            <Share2 className="h-3 w-3" />
-            {post.shares}
-          </span>
-          <span className="flex items-center gap-1">
-            <Eye className="h-3 w-3" />
-            {post.views}
-          </span>
+
+        {/* Likes Count */}
+        <div className="font-semibold mb-2">{likesCount} likes</div>
+
+        {/* Post Content */}
+        <div className="mb-2">
+          <span className="font-semibold mr-2">{post.authorName}</span>
+          {post.content}
+        </div>
+
+        {/* Comments Section */}
+        {post.comments.length > 0 && (
+          <div className="space-y-2">
+            <div className="text-sm text-muted-foreground">
+              View all {commentsCount} comments
+            </div>
+            {latestComment && (
+              <div className="text-sm">
+                <span className="font-semibold mr-2">
+                  {session?.user?._id?.toString() === latestComment.author.toString() 
+                    ? session.user.username 
+                    : "User"}
+                </span>
+                {latestComment.content}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Timestamp */}
+        <div className="text-xs text-muted-foreground mt-2">
+          {new Date(post.createdAt).toLocaleDateString()}
+        </div>
+      </CardContent>
+
+      {/* Comment Input */}
+      <CardFooter className="p-4 border-t">
+        <div className="flex items-center gap-2 w-full">
+          <Smile className="h-6 w-6 text-muted-foreground" />
+          <Input
+            type="text"
+            value={commentInput}
+            onChange={(e) => setCommentInput(e.target.value)}
+            placeholder="Add a comment..."
+            className="flex-1 border-none focus-visible:ring-0"
+          />
+          <Button
+            variant="ghost"
+            onClick={() => handleInteraction("comment", commentInput)}
+            disabled={!commentInput.trim()}
+            className="text-primary font-semibold"
+          >
+            Post
+          </Button>
         </div>
       </CardFooter>
     </Card>
