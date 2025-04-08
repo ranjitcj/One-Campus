@@ -1,8 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { fetchPosts } from "@/lib/fetch";
 import { IPost } from "@/model/Post";
 import {
@@ -34,8 +31,10 @@ export default function Page() {
     const loadPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetchPosts({ status: "published", limit: 6 });
-        setPosts(response.posts);
+        const response = await fetchPosts({ postStatus: "published" });
+        // Filter posts to ensure only published posts are shown
+        const publishedPosts = response.posts.filter(post => post.postStatus === "published");
+        setPosts(publishedPosts);
       } catch (err) {
         setError("Failed to load posts. Please try again later.");
         console.error(err);
@@ -44,7 +43,15 @@ export default function Page() {
       }
     };
 
-    loadPosts();
+    // Use requestIdleCallback for better performance
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadPosts);
+      } else {
+        // Fallback for browsers that don't support requestIdleCallback
+        setTimeout(loadPosts, 0);
+      }
+    }
   }, []);
 
   function handleAddNew() {
@@ -52,43 +59,29 @@ export default function Page() {
   }
 
   return (
-    <div className="[--header-height:calc(theme(spacing.14))] relative">
-      <SidebarProvider className="flex flex-col">
-        <SiteHeader />
-        <div className="flex flex-1">
-          <AppSidebar />
-          <SidebarInset>
-            <div className="flex flex-1 flex-col gap-4 p-4">
-              {loading ? (
-                <div className="flex items-center justify-center min-h-[50vh]">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : error ? (
-                <div className="flex items-center justify-center min-h-[50vh] text-destructive">
-                  {error}
-                </div>
-              ) : (
-                <>
-                  <h1 className="text-2xl font-bold">Latest Posts</h1>
-                  <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    {posts.slice(0, 3).map((post) => (
-                      <PostCard key={post._id?.toString()} post={post} />
-                    ))}
-                  </div>
-                  <div className="min-h-[50vh] flex-1 rounded-xl bg-card p-4 md:min-h-min">
-                    <h2 className="text-xl font-bold mb-4">More Content</h2>
-                    <div className="grid gap-4 md:grid-cols-3">
-                      {posts.slice(3).map((post) => (
-                        <PostCard key={post._id?.toString()} post={post} />
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </SidebarInset>
+    <div className="flex flex-1 flex-col gap-4 p-4">
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
-      </SidebarProvider>
+      ) : error ? (
+        <div className="flex items-center justify-center min-h-[50vh] text-destructive">
+          {error}
+        </div>
+      ) : posts.length === 0 ? (
+        <div className="flex items-center justify-center min-h-[50vh] text-muted-foreground">
+          No published posts available
+        </div>
+      ) : (
+        <>
+          <h1 className="text-2xl font-bold">Latest Posts</h1>
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard key={post._id?.toString()} post={post} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Add New Post Button */}
       <Button
@@ -249,4 +242,4 @@ function PostCard({ post }: PostCardProps) {
       </CardFooter>
     </Card>
   );
-}
+} 

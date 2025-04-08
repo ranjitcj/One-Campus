@@ -9,7 +9,7 @@ export interface PostFilters {
   category?: string;
   tag?: string;
   author?: string;
-  status?: 'draft' | 'published' | 'archived';
+  postStatus?: 'draft' | 'published' | 'archived';
   limit?: number;
   page?: number;
   searchQuery?: string;

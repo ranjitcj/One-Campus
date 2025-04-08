@@ -8,7 +8,7 @@ import { authOptions } from "../auth/[...nextauth]/option";
 
 // Define an interface for the query object to replace 'any'
 interface PostQuery {
-  status: string;
+  postStatus: string;
   category?: string;
   tags?: string;
   author?: string;
@@ -18,7 +18,7 @@ interface PostQuery {
 
 // Define an interface for the filter object to provide type safety
 interface PostFilter {
-  status: string;
+  postStatus: string;
   category?: string;
   author?: string;
   tags?: string;
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
           author: post.author,
           category: post.category,
           tags: post.tags,
-          status: post.status,
+          postStatus: post.postStatus,
           createdAt: post.createdAt
         }
       },
@@ -98,18 +98,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const url = new URL(request.url);
     const searchParams = url.searchParams;
 
-    const page = Number(searchParams.get("page")) || 1;
-    const limit = Number(searchParams.get("limit")) || 10;
     const category = searchParams.get("category");
     const tag = searchParams.get("tag");
     const author = searchParams.get("author");
-    const status = searchParams.get("status") || "published";
+    const postStatus = searchParams.get("status") || "published";
     const searchQuery = searchParams.get("searchQuery");
 
-    const skip = (page - 1) * limit;
-
     // Create filter with type safety
-    const filter: PostFilter = { status };
+    const filter: PostFilter = { postStatus };
 
     if (category) filter.category = category;
     if (author) filter.author = author;
@@ -120,22 +116,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       filter.$text = { $search: searchQuery };
     }
 
-    // Get posts with pagination
+    // Get posts with optimized query
     const posts = await Post.find(filter)
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
       .populate("author", "name avatar")
       .lean();
 
-    // Get total posts count for pagination
-    const totalPosts = await Post.countDocuments(filter);
-
     return NextResponse.json({
       posts,
-      totalPosts,
-      totalPages: Math.ceil(totalPosts / limit),
-      currentPage: page,
+      totalPosts: posts.length,
+      totalPages: 1,
+      currentPage: 1,
     });
   } catch (error) {
     console.error(error);
