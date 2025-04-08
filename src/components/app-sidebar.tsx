@@ -10,7 +10,10 @@ import {
   MessagesSquare,
   Send,
   UserRoundSearch,
+  Settings,
+  FileText
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -139,6 +142,32 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+  const user = session?.user;
+  const isAdmin = user?.role === "Admin";
+
+  // Admin navigation items
+  const adminNavItems = [
+    {
+      title: "Admin",
+      url: "#",
+      icon: Settings,
+      items: [
+        {
+          title: "Manage Posts",
+          url: "/dashboard/admin/posts",
+        },
+        {
+          title: "User Management",
+          url: "/dashboard/admin/users",
+        }
+      ],
+    },
+  ];
+
+  // Combined navigation items
+  const navMainItems = isAdmin ? [...data.navMain, ...adminNavItems] : data.navMain;
+
   return (
     <Sidebar
       className="top-[--header-height] !h-[calc(100svh-var(--header-height))]"
@@ -163,7 +192,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMainItems} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

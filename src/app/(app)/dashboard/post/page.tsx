@@ -18,8 +18,6 @@ export default function CreatePostPage() {
   const [category, setCategory] = useState("General");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [status, setStatus] = useState<"draft" | "published" | "archived">("published");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -140,9 +138,7 @@ export default function CreatePostPage() {
         content,
         images: uploadedImages,
         category,
-        tags,
-        isPrivate,
-        status
+        tags
       };
       
       const response = await fetch("/api/post", {
@@ -162,7 +158,7 @@ export default function CreatePostPage() {
 
       
       // Show success confirmation
-      setSuccessMessage(`Post created successfully! ${status === "published" ? "Your post is now live." : `It has been saved as ${status}.`}`);
+      setSuccessMessage("Post created successfully!");
       setShowConfirmation(true);
       
       // Redirect will happen via the useEffect above
@@ -360,39 +356,6 @@ export default function CreatePostPage() {
               ))}
             </div>
           )}
-        </div>
-        
-        {/* Privacy and Status */}
-        <div className="flex flex-wrap gap-8">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isPrivate"
-              checked={isPrivate}
-              onChange={(e) => setIsPrivate(e.target.checked)}
-              className="h-4 w-4 border-gray-300 rounded"
-            />
-            <label htmlFor="isPrivate" className="ml-2 block text-sm text-gray-700">
-              Private Post
-            </label>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">Status:</span>
-            <div className="flex space-x-4">
-              {(["draft", "published", "archived"] as const).map((option) => (
-                <label key={option} className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    className="form-radio h-4 w-4"
-                    checked={status === option}
-                    onChange={() => setStatus(option)}
-                  />
-                  <span className="ml-2 text-sm capitalize">{option}</span>
-                </label>
-              ))}
-            </div>
-          </div>
         </div>
         
         {/* Submit Button */}

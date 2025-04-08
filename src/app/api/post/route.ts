@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse request body
-    const { content, images, category, tags, isPrivate, status } = await req.json();
+    const { content, images, category, tags } = await req.json();
     
     // Validate required fields
     if (!content || content.trim() === "") {
@@ -58,8 +58,7 @@ export async function POST(req: NextRequest) {
       author: session.user._id,
       category: category || "General",
       tags: tags || [],
-      isPrivate: !!isPrivate,
-      status: status || "published",
+      postStatus: "pending"
     });
 
     // Save post to database
@@ -77,7 +76,6 @@ export async function POST(req: NextRequest) {
           author: post.author,
           category: post.category,
           tags: post.tags,
-          isPrivate: post.isPrivate,
           status: post.status,
           createdAt: post.createdAt
         }

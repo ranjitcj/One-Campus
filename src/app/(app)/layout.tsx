@@ -3,6 +3,7 @@ import "../globals.css";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "One Campus",
@@ -27,6 +28,7 @@ export default function Layout({
           </div>
         </SidebarProvider>
       </div>
+      <Toaster />
     </html>
   );
 }

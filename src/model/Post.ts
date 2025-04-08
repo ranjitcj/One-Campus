@@ -21,8 +21,7 @@ export interface IPost extends Document {
   }[];
   shares: number;
   views: number;
-  isPrivate: boolean;
-  status: "draft" | "published" | "archived";
+  postStatus: "pending" | "published" | "disapproved";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -106,14 +105,10 @@ const PostSchema = new Schema<IPost>(
       type: Number,
       default: 0
     },
-    isPrivate: {
-      type: Boolean,
-      default: false
-    },
-    status: {
+    postStatus: {
       type: String,
-      enum: ["draft", "published", "archived"],
-      default: "published"
+      enum: ["pending", "published", "disapproved"],
+      default: "pending"
     }
   },
   { timestamps: true }
