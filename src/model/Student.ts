@@ -1,30 +1,70 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface Student extends Document {
-  rollno: string;
+  name: string;
+  rollNumber: string;
   email: string;
-  college_id: string;
+  phone?: string;
+  department?: mongoose.Types.ObjectId;
+  subjects: mongoose.Types.ObjectId[];
+  attendance: {
+    subject: mongoose.Types.ObjectId;
+    date: Date;
+    status: "present" | "absent" | "late";
+  }[];
 }
-const StudentSchema: Schema<Student> = new Schema({
-  rollno: {
+
+const studentSchema = new Schema<Student>({
+  name: {
     type: String,
-    required: [true, "Rollno is required"],
+    required: [true, "Name is required"],
+    trim: true
+  },
+  rollNumber: {
+    type: String,
+    required: [true, "Roll number is required"],
     unique: true,
+    trim: true
   },
   email: {
     type: String,
     required: [true, "Email is required"],
     unique: true,
-    match: [/.+\@.+\..+/, "Please fill a valid email address"],
+    trim: true,
+    lowercase: true
   },
-  college_id: {
+  phone: {
     type: String,
-    required: [true, "College id is required"],
-    unique: true,
+    trim: true
   },
+  department: {
+    type: Schema.Types.ObjectId,
+    ref: "Department"
+  },
+  subjects: [{
+    type: Schema.Types.ObjectId,
+    ref: "Subject"
+  }],
+  attendance: [{
+    subject: {
+      type: Schema.Types.ObjectId,
+      ref: "Subject",
+      required: true
+    },
+    date: {
+      type: Date,
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ["present", "absent", "late"],
+      required: true
+    }
+  }]
+}, {
+  timestamps: true
 });
 
-const StudentModel =
-  (mongoose.models.Student as mongoose.Model<Student>) ||
-  mongoose.model<Student>("Student", StudentSchema);
+const StudentModel = mongoose.models.Student || mongoose.model<Student>("Student", studentSchema);
+
 export default StudentModel;

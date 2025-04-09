@@ -62,7 +62,7 @@ export default function CollegeDataPage() {
 
     try {
       const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbxojuwqnSByix7wsxsTT74iYB9E1m64k-SO5gUbA1sak27gYKUSBioFkL0WxFcBYElzpQ/exec?college_id=${collegeId}`
+        `https://script.google.com/macros/s/AKfycbxhAo2fJiJoEhZvtArZnb1FqIgABhP6tB726MvMUCsBUjpe5IlfQQFNcuE1KE9c63Bj/exec?college_id=${collegeId}`
       );
 
       const data = await response.json();

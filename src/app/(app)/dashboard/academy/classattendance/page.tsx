@@ -15,6 +15,14 @@ interface YearData {
   [division: string]: DivisionData | string;
 }
 
+interface AcademicYear {
+  _id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
 interface BranchData {
   branchName: string;
   code: string;
@@ -119,11 +127,15 @@ const classData: ClassroomData = {
 
 export default function AttendanceManagementSystem() {
   const [selections, setSelections] = useState({
+    AcademicYear: "",
     Branch: "",
     Year: "",
     Division: "",
     Subject: "",
   });
+
+  const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [studentData, setStudentData] = useState({
     totalStudents: 0,
@@ -138,6 +150,22 @@ export default function AttendanceManagementSystem() {
     text: "",
     isError: false,
   });
+
+  useEffect(() => {
+    const fetchAcademicYears = async () => {
+      try {
+        const response = await fetch('/api/academic-year');
+        const data = await response.json();
+        setAcademicYears(data);
+      } catch (error) {
+        console.error('Error fetching academic years:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAcademicYears();
+  }, []);
 
   // Clear lower selections when higher level changes
   const clearLowerSelections = (fromKey: keyof typeof selections) => {
@@ -350,16 +378,37 @@ export default function AttendanceManagementSystem() {
     studentData.attendanceData.every((status) => status === "P");
 
   return (
-    <div className="min-h-screen bg-[#f4f4f6] flex flex-col items-center">
-      <header className="w-full bg-[#4CAF50] text-white py-5 text-center shadow-md">
-        <h1 className="text-2xl font-bold">Attendance Management System</h1>
-      </header>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Attendance Management System</h1>
+      
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="space-y-4">
+          {/* Academic Year Selection */}
+          <div className="selection AcademicYear">
+            <h2 className="h-h2 text-lg font-bold mb-2">Academic Year:</h2>
+            <div className="flex flex-wrap gap-2">
+              {isLoading ? (
+                <div>Loading academic years...</div>
+              ) : (
+                academicYears.map((year) => (
+                  <div
+                    key={year._id}
+                    onClick={() => handleSelection("AcademicYear", year._id)}
+                    className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
+                      selections.AcademicYear === year._id
+                        ? "bg-[#4CAF50] text-white selected"
+                        : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
+                    }`}
+                  >
+                    {year.name}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
 
-      <main className="w-full max-w-[800px] px-4 py-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {/* Selection Container */}
-          <div id="selection-container" className="space-y-4 mb-6">
-            {/* Branch Selection */}
+          {/* Branch Selection */}
+          {selections.AcademicYear && (
             <div className="selection Branch">
               <h2 className="h-h2 text-lg font-bold mb-2">Branch:</h2>
               <div className="flex flex-wrap gap-2">
@@ -378,189 +427,189 @@ export default function AttendanceManagementSystem() {
                 ))}
               </div>
             </div>
+          )}
 
-            {/* Year Selection */}
-            {selections.Branch && (
-              <div className="selection Year">
-                <h2 className="h-h2 text-lg font-bold mb-2">Year:</h2>
-                <div className="flex flex-wrap gap-2">
-                  {getYearOptions().map((year) => (
-                    <div
-                      key={year}
-                      onClick={() => handleSelection("Year", year)}
-                      className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
-                        selections.Year === year
-                          ? "bg-[#4CAF50] text-white selected"
-                          : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
-                      }`}
-                    >
-                      {year}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Division Selection */}
-            {selections.Branch && selections.Year && (
-              <div className="selection Division">
-                <h2 className="h-h2 text-lg font-bold mb-2">Division:</h2>
-                <div className="flex flex-wrap gap-2">
-                  {getDivisionOptions().map((division) => (
-                    <div
-                      key={division}
-                      onClick={() => handleSelection("Division", division)}
-                      className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
-                        selections.Division === division
-                          ? "bg-[#4CAF50] text-white selected"
-                          : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
-                      }`}
-                    >
-                      {division}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Subject Selection */}
-            {selections.Branch && selections.Year && selections.Division && (
-              <div className="selection Subject">
-                <h2 className="h-h2 text-lg font-bold mb-2">Subject:</h2>
-                <div className="flex flex-wrap gap-2">
-                  {getSubjectOptions().map((subject) => (
-                    <div
-                      key={subject}
-                      onClick={() => handleSelection("Subject", subject)}
-                      className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
-                        selections.Subject === subject
-                          ? "bg-[#4CAF50] text-white selected"
-                          : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
-                      }`}
-                    >
-                      {subject}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Class Header and Student Grid */}
-          {selections.Subject && (
-            <div>
-              <div className="header-status flex justify-between items-center mb-4">
-                <span id="class-display" className="font-semibold">
-                  {`${selections.Year} ${selections.Branch} ${selections.Division}`}
-                </span>
-                <button
-                  id="toggle-all-btn"
-                  onClick={toggleAllAttendance}
-                  className="toggle-btn bg-[#2196F3] text-white px-3 py-1.5 rounded text-sm hover:bg-[#0b7dda] transition-colors"
-                  disabled={isSubmitted}
-                >
-                  {allPresent ? "Mark All Absent" : "Mark All Present"}
-                </button>
-              </div>
-
-              <div
-                id="student-grid"
-                className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 mb-6"
-              >
-                {studentData.attendanceData.map((status, index) => (
+          {/* Year Selection */}
+          {selections.Branch && (
+            <div className="selection Year">
+              <h2 className="h-h2 text-lg font-bold mb-2">Year:</h2>
+              <div className="flex flex-wrap gap-2">
+                {getYearOptions().map((year) => (
                   <div
-                    key={index}
-                    onClick={() => toggleStudentAttendance(index)}
-                    className={`student-card w-full aspect-square flex items-center justify-center rounded cursor-pointer font-mono font-bold text-white transition-colors ${
-                      status === "P"
-                        ? "bg-[#87DF77] hover:bg-[#6bc85a] present"
-                        : "bg-[#FA5C35] hover:bg-[#d35400]"
-                    } ${isSubmitted ? "cursor-default" : ""}`}
-                    data-index={index}
+                    key={year}
+                    onClick={() => handleSelection("Year", year)}
+                    className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
+                      selections.Year === year
+                        ? "bg-[#4CAF50] text-white selected"
+                        : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
+                    }`}
                   >
-                    {studentData.startRoll + index}
+                    {year}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Attendance Summary */}
-          <div className="attendance-summary bg-[#e7f3fe] border-l-[6px] border-[#2196F3] rounded p-4 mb-6">
-            <p>
-              Selected:{" "}
-              <span id="selected-options">
-                {Object.values(selections).filter(Boolean).join(" ") || "None"}
-              </span>
-            </p>
-            <p>
-              Class Code: <span id="class-code">{getClassCode()}</span>
-            </p>
-            <p>
-              Subject:{" "}
-              <span id="subject-name">
-                {selections.Subject || "Not Selected"}
-              </span>
-            </p>
-            <p>
-              Total Students:{" "}
-              <span id="total-students">{studentData.totalStudents}</span>
-            </p>
-            <p>
-              Present Students: <span id="present-summary">{presentCount}</span>
-            </p>
-            <p>
-              Absent Students:{" "}
-              <span id="absent-summary">
-                {studentData.totalStudents - presentCount}
-              </span>
-            </p>
-            <p>
-              Attendance Percentage:{" "}
-              <span id="attendance-percentage">{attendancePercentage}%</span>
-            </p>
-          </div>
-
-          {/* Status Message */}
-          {statusMessage.text && (
-            <div
-              id="status-message"
-              className={`p-3 rounded mb-4 text-center text-sm ${
-                statusMessage.isError
-                  ? "error-message bg-[#f2dede] text-[#a94442] border border-[#ebccd1]"
-                  : "success-message bg-[#dff0d8] text-[#3c763d] border border-[#d6e9c6]"
-              }`}
-            >
-              {statusMessage.text}
+          {/* Division Selection */}
+          {selections.Branch && selections.Year && (
+            <div className="selection Division">
+              <h2 className="h-h2 text-lg font-bold mb-2">Division:</h2>
+              <div className="flex flex-wrap gap-2">
+                {getDivisionOptions().map((division) => (
+                  <div
+                    key={division}
+                    onClick={() => handleSelection("Division", division)}
+                    className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
+                      selections.Division === division
+                        ? "bg-[#4CAF50] text-white selected"
+                        : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
+                    }`}
+                  >
+                    {division}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Submit Button */}
-          {selections.Subject && (
-            <button
-              id="submit-btn"
-              onClick={handleSubmit}
-              disabled={isSubmitted || isSubmitting}
-              className={`w-full py-3 rounded text-white font-bold text-base transition-colors ${
-                isSubmitted || isSubmitting
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#4CAF50] hover:bg-[#45a049]"
-              }`}
-            >
-              {isSubmitting ? (
-                <span className="inline-flex items-center justify-center">
-                  Submitting...
-                  <span className="submit-spinner ml-2 inline-block w-4 h-4 border-2 border-white border-opacity-30 rounded-full border-t-white"></span>
-                </span>
-              ) : isSubmitted ? (
-                "Attendance Submitted"
-              ) : (
-                "Submit Attendance"
-              )}
-            </button>
+          {/* Subject Selection */}
+          {selections.Branch && selections.Year && selections.Division && (
+            <div className="selection Subject">
+              <h2 className="h-h2 text-lg font-bold mb-2">Subject:</h2>
+              <div className="flex flex-wrap gap-2">
+                {getSubjectOptions().map((subject) => (
+                  <div
+                    key={subject}
+                    onClick={() => handleSelection("Subject", subject)}
+                    className={`option px-3 py-2 rounded cursor-pointer transition-colors ${
+                      selections.Subject === subject
+                        ? "bg-[#4CAF50] text-white selected"
+                        : "bg-[#f0f0f0] hover:bg-[#4CAF50] hover:text-white"
+                    }`}
+                  >
+                    {subject}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-      </main>
+
+        {/* Class Header and Student Grid */}
+        {selections.Subject && (
+          <div>
+            <div className="header-status flex justify-between items-center mb-4">
+              <span id="class-display" className="font-semibold">
+                {`${selections.Year} ${selections.Branch} ${selections.Division}`}
+              </span>
+              <button
+                id="toggle-all-btn"
+                onClick={toggleAllAttendance}
+                className="toggle-btn bg-[#2196F3] text-white px-3 py-1.5 rounded text-sm hover:bg-[#0b7dda] transition-colors"
+                disabled={isSubmitted}
+              >
+                {allPresent ? "Mark All Absent" : "Mark All Present"}
+              </button>
+            </div>
+
+            <div
+              id="student-grid"
+              className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 mb-6"
+            >
+              {studentData.attendanceData.map((status, index) => (
+                <div
+                  key={index}
+                  onClick={() => toggleStudentAttendance(index)}
+                  className={`student-card w-full aspect-square flex items-center justify-center rounded cursor-pointer font-mono font-bold text-white transition-colors ${
+                    status === "P"
+                      ? "bg-[#87DF77] hover:bg-[#6bc85a] present"
+                      : "bg-[#FA5C35] hover:bg-[#d35400]"
+                  } ${isSubmitted ? "cursor-default" : ""}`}
+                  data-index={index}
+                >
+                  {studentData.startRoll + index}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Attendance Summary */}
+        <div className="attendance-summary bg-[#e7f3fe] border-l-[6px] border-[#2196F3] rounded p-4 mb-6">
+          <p>
+            Selected:{" "}
+            <span id="selected-options">
+              {Object.values(selections).filter(Boolean).join(" ") || "None"}
+            </span>
+          </p>
+          <p>
+            Class Code: <span id="class-code">{getClassCode()}</span>
+          </p>
+          <p>
+            Subject:{" "}
+            <span id="subject-name">
+              {selections.Subject || "Not Selected"}
+            </span>
+          </p>
+          <p>
+            Total Students:{" "}
+            <span id="total-students">{studentData.totalStudents}</span>
+          </p>
+          <p>
+            Present Students: <span id="present-summary">{presentCount}</span>
+          </p>
+          <p>
+            Absent Students:{" "}
+            <span id="absent-summary">
+              {studentData.totalStudents - presentCount}
+            </span>
+          </p>
+          <p>
+            Attendance Percentage:{" "}
+            <span id="attendance-percentage">{attendancePercentage}%</span>
+          </p>
+        </div>
+
+        {/* Status Message */}
+        {statusMessage.text && (
+          <div
+            id="status-message"
+            className={`p-3 rounded mb-4 text-center text-sm ${
+              statusMessage.isError
+                ? "error-message bg-[#f2dede] text-[#a94442] border border-[#ebccd1]"
+                : "success-message bg-[#dff0d8] text-[#3c763d] border border-[#d6e9c6]"
+            }`}
+          >
+            {statusMessage.text}
+          </div>
+        )}
+
+        {/* Submit Button */}
+        {selections.Subject && (
+          <button
+            id="submit-btn"
+            onClick={handleSubmit}
+            disabled={isSubmitted || isSubmitting}
+            className={`w-full py-3 rounded text-white font-bold text-base transition-colors ${
+              isSubmitted || isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#4CAF50] hover:bg-[#45a049]"
+            }`}
+          >
+            {isSubmitting ? (
+              <span className="inline-flex items-center justify-center">
+                Submitting...
+                <span className="submit-spinner ml-2 inline-block w-4 h-4 border-2 border-white border-opacity-30 rounded-full border-t-white"></span>
+              </span>
+            ) : isSubmitted ? (
+              "Attendance Submitted"
+            ) : (
+              "Submit Attendance"
+            )}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

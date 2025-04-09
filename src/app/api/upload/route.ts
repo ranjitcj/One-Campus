@@ -4,6 +4,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/option";
 import cloudinary from "@/lib/cloudinary";
 
+// Set larger payload size limit for image uploads
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 interface CloudinaryResponse {
   url: string;
   publicId: string;
@@ -88,11 +93,3 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 }
-
-// Set larger payload size limit for image uploads
-export const config = {
-  api: {
-    bodyParser: false,
-    responseLimit: "8mb",
-  },
-};

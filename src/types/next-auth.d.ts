@@ -32,6 +32,7 @@
 // @/types/next-auth.d.ts
 import "next-auth";
 import { DefaultSession } from "next-auth";
+import { AttendanceData } from "@/lib/attendanceUtils";
 
 declare module "next-auth" {
   interface User {
